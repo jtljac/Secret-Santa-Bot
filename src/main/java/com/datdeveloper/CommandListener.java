@@ -9,11 +9,15 @@ import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 
 public class CommandListener extends ListenerAdapter {
     final HashMap<String, Command> commands;
+
+    public static final Logger logger = LoggerFactory.getLogger(CommandListener.class);
 
     public CommandListener(HashMap<String, Command> commands) {
         this.commands = commands;
@@ -63,6 +67,8 @@ public class CommandListener extends ListenerAdapter {
         if (!command.execute(event)) {
             event.reply("Failed to execute command").setEphemeral(true).queue();
         }
+
+        logger.info(event.getMember().getEffectiveName() + " just executed " + command.getCommandName() + " on " + event.getGuild().getName());
     }
 
     @Override
@@ -80,6 +86,7 @@ public class CommandListener extends ListenerAdapter {
                 guildStore.partakers.add(event.getMember().getId());
                 DataStore.INSTANCE.saveDataStore();
                 event.reply("Successfully opted in").setEphemeral(true).queue();
+                logger.info(event.getMember().getEffectiveName() + " just opted in on " + event.getGuild().getName());
                 break;
             case "Optout":
                 if (!guildStore.partakers.contains(event.getMember().getId())) {
@@ -90,6 +97,7 @@ public class CommandListener extends ListenerAdapter {
                 guildStore.partakers.remove(event.getMember().getId());
                 DataStore.INSTANCE.saveDataStore();
                 event.reply("Successfully opted out").setEphemeral(true).queue();
+                logger.info(event.getMember().getEffectiveName() + " just opted out on " + event.getGuild().getName());
                 break;
         }
     }
