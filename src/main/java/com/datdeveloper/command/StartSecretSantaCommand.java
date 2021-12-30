@@ -2,8 +2,12 @@ package com.datdeveloper.command;
 
 import com.datdeveloper.DataStore;
 import com.datdeveloper.GuildStore;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -30,6 +34,19 @@ public class StartSecretSantaCommand extends BaseCommand{
                         "They're full username is: " + event.getGuild().getMemberById(gifts.get(key)).getUser().getName() + "#" + event.getGuild().getMemberById(gifts.get(key)).getUser().getDiscriminator();
                 return privateChannel.sendMessage(message);
             }).queue();
+        }
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("Targets:");
+        for (String person : gifts.keySet()) {
+            builder.append("\n").append(person).append(":    ").append(gifts.get(person));
+        }
+
+        try (FileWriter fileWriter = new FileWriter("SecretSantaTargets.json")) {
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            gson.toJson(gifts, fileWriter);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         event.reply("Successfully sent PMs").setEphemeral(true).queue();

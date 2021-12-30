@@ -1,9 +1,6 @@
 package com.datdeveloper;
 
-import com.datdeveloper.command.Command;
-import com.datdeveloper.command.SecretSantaCommand;
-import com.datdeveloper.command.SecretSantaResetCommand;
-import com.datdeveloper.command.StartSecretSantaCommand;
+import com.datdeveloper.command.*;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -26,7 +23,7 @@ public class Bot {
     static final long activityDelay = 60000L;
 
     public static final Logger logger = LoggerFactory.getLogger(Bot.class);
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public static void main(String[] args) throws LoginException, InterruptedException {
         HashMap<String, Command> commands = new HashMap<>();
@@ -34,6 +31,7 @@ public class Bot {
         commands.put("prime-santa", new SecretSantaCommand("prime-santa", "Send a message to start opt-ins for the secret santa", 2));
         commands.put("start-santa", new StartSecretSantaCommand("start-santa", "Sends the PMs the people who've opted in with their targets", 2));
         commands.put("reset-santa", new SecretSantaResetCommand("reset-santa", "Resets the secret santa list", 2));
+        commands.put("list-santa", new ListSecretSantaCommand("list-santa", "Lists all the people who's so far opted in", 2));
 
         JDA jda = JDABuilder
                 .createDefault("")
