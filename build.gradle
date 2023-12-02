@@ -8,11 +8,6 @@ version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
-
-    maven {
-        name 'm2-dv8tion'
-        url 'https://m2.dv8tion.net/releases'
-    }
 }
 
 jar {
@@ -24,7 +19,7 @@ jar {
 
 dependencies {
     implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.32'
-    implementation ("net.dv8tion:JDA:4.3.0_277") {
+    implementation ("net.dv8tion:JDA:5.0.0-beta.18") {
         exclude module: 'opus-java'
     }
     implementation 'com.google.code.gson:gson:2.8.9'

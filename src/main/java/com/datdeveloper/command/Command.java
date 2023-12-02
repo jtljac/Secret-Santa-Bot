@@ -1,24 +1,26 @@
 package com.datdeveloper.command;
 
-import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 public interface Command {
     /**
+     * Get the name of the command
      * @return The name of the command
      */
     String getCommandName();
 
     /**
+     * Get the commands description
      * @return The description of the command
      */
     String getDescription();
 
     /**
+     * Get the data required to upsert the command
      * @return The command data to upsert the command
      */
-    CommandData getCommandData();
+    SlashCommandData getCommandData();
 
     /**
      * 0: Anyone
@@ -33,5 +35,5 @@ public interface Command {
      * @param event The slash command event
      * @return Whether the command was successful or not
      */
-    boolean execute(SlashCommandEvent event);
+    boolean execute(SlashCommandInteractionEvent event);
 }

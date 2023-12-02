@@ -17,15 +17,16 @@ import java.util.List;
 import java.util.Random;
 
 public class Bot {
-    // Activities to display in discord
-    static final List<Activity> activities = Arrays.asList(Activity.playing("that one christmas level from Viscera Cleanup Detail"), Activity.playing("with some christmas gifts"), Activity.watching("Christmas Films"), Activity.listening("some Christmas music"), Activity.of(Activity.ActivityType.DEFAULT, "Delivering some presents"));
-    // The delay before selecting a new activity
-    static final long activityDelay = 60000L;
+    /** Activities to display in discord */
+    static final List<Activity> activities = Arrays.asList(Activity.playing("that one christmas level from Viscera Cleanup Detail"), Activity.playing("with some christmas gifts"), Activity.watching("Christmas Films"), Activity.listening("some Christmas music"), Activity.of(Activity.ActivityType.CUSTOM_STATUS, "Delivering some presents"));
+
+    /** The delay before selecting a new activity */
+    static final long ActivityDelay = 60000L;
 
     public static final Logger logger = LoggerFactory.getLogger(Bot.class);
     public static final boolean DEBUG = true;
 
-    public static void main(String[] args) throws LoginException, InterruptedException {
+    public static void main(String[] args) throws InterruptedException {
         HashMap<String, Command> commands = new HashMap<>();
 
         commands.put("prime-santa", new SecretSantaCommand("prime-santa", "Send a message to start opt-ins for the secret santa", 2));
@@ -41,12 +42,6 @@ public class Bot {
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
                 .build();
 
-        if (!DEBUG) {
-            for (String key : commands.keySet()) {
-                jda.upsertCommand(commands.get(key).getCommandData()).queue();
-            }
-        }
-
         Activity nextActivityStatus;
 
         while(true){
@@ -56,7 +51,7 @@ public class Bot {
             jda.getPresence().setActivity(nextActivityStatus);
 
             // the event listeners are in another thread, we're safe to put this one to sleep
-            Thread.sleep(activityDelay);
+            Thread.sleep(ActivityDelay);
         }
     }
 }

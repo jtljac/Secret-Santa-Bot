@@ -1,7 +1,11 @@
 package com.datdeveloper.command;
 
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
+/**
+ * An abstraction to quickly set up some of a command
+ */
 public abstract class BaseCommand implements Command {
     public final String name;
     public final String description;
@@ -14,8 +18,8 @@ public abstract class BaseCommand implements Command {
     }
 
     @Override
-    public CommandData getCommandData() {
-        return new CommandData(getCommandName(), getDescription());
+    public SlashCommandData getCommandData() {
+        return Commands.slash(getCommandName(), getDescription());
     }
 
     @Override

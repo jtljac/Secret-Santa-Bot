@@ -3,23 +3,23 @@ package com.datdeveloper;
 import com.datdeveloper.command.Command;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.ReadyEvent;
-import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CommandListener extends ListenerAdapter {
-    final HashMap<String, Command> commands;
+    final Map<String, Command> commands;
 
     public static final Logger logger = LoggerFactory.getLogger(CommandListener.class);
 
-    public CommandListener(HashMap<String, Command> commands) {
+    public CommandListener(Map<String, Command> commands) {
         this.commands = commands;
     }
 
@@ -27,31 +27,16 @@ public class CommandListener extends ListenerAdapter {
     public void onReady(@NotNull ReadyEvent event) {
         super.onReady(event);
 
-        if (Bot.DEBUG) {
-            event.getJDA().getGuilds().forEach(guild -> {
-                for (String key : commands.keySet()) {
-                    guild.upsertCommand(commands.get(key).getCommandData()).queue();
-                }
-            });
-        }
+        event.getJDA().updateCommands()
+                .addCommands(commands.values().stream().map(Command::getCommandData).collect(Collectors.toList()))
+                .queue();
     }
 
     @Override
-    public void onGuildJoin(@NotNull GuildJoinEvent event) {
-        super.onGuildJoin(event);
-
-        if (Bot.DEBUG) {
-            for (String key : commands.keySet()) {
-                event.getGuild().upsertCommand(commands.get(key).getCommandData()).queue();
-            }
-        }
-    }
-
-    @Override
-    public void onSlashCommand(@NotNull SlashCommandEvent event) {
-        super.onSlashCommand(event);
+    public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
+        super.onSlashCommandInteraction(event);
         if (!commands.containsKey(event.getName())) {
-            event.reply("Unknown command").queue();
+            event.reply("Unknown command").setEphemeral(true).queue();
             return;
         }
 
@@ -68,36 +53,41 @@ public class CommandListener extends ListenerAdapter {
             event.reply("Failed to execute command").setEphemeral(true).queue();
         }
 
-        logger.info(event.getMember().getEffectiveName() + " just executed " + command.getCommandName() + " on " + event.getGuild().getName());
+        logger.info("{} just executed {} on {}", event.getMember().getEffectiveName(), command.getCommandName(), event.getGuild().getName());
     }
 
     @Override
-    public void onButtonClick(@NotNull ButtonClickEvent event) {
-        super.onButtonClick(event);
+    public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
+        super.onButtonInteraction(event);
         GuildStore guildStore = DataStore.INSTANCE.getGuildStore(event.getGuild());
+
+        Member caller = event.getMember();
+
+        if (caller == null) return;
 
         switch (event.getComponentId()) {
             case "Optin":
-                if (guildStore.partakers.contains(event.getMember().getId())) {
+                if (guildStore.partakers.contains(caller.getId())) {
                     event.reply("You cannot opt in more than once").setEphemeral(true).queue();
                     break;
                 }
 
-                guildStore.partakers.add(event.getMember().getId());
+                guildStore.partakers.add(caller.getId());
                 DataStore.INSTANCE.saveDataStore();
                 event.reply("Successfully opted in").setEphemeral(true).queue();
-                logger.info(event.getMember().getEffectiveName() + " just opted in on " + event.getGuild().getName());
+                logger.info("{} just opted in on {}",
+                        caller.getEffectiveName(), event.getGuild().getName());
                 break;
             case "Optout":
-                if (!guildStore.partakers.contains(event.getMember().getId())) {
+                if (!guildStore.partakers.contains(caller.getId())) {
                     event.reply("You cannot opt-out without having first opted-in").setEphemeral(true).queue();
                     break;
                 }
 
-                guildStore.partakers.remove(event.getMember().getId());
+                guildStore.partakers.remove(caller.getId());
                 DataStore.INSTANCE.saveDataStore();
                 event.reply("Successfully opted out").setEphemeral(true).queue();
-                logger.info(event.getMember().getEffectiveName() + " just opted out on " + event.getGuild().getName());
+                logger.info(caller.getEffectiveName() + " just opted out on " + event.getGuild().getName());
                 break;
         }
     }

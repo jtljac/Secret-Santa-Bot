@@ -11,6 +11,9 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * A quick store of data as json files
+ */
 public class DataStore {
     public static final DataStore INSTANCE = new DataStore();
     protected Map<String, GuildStore> guildStores = new HashMap<>();
@@ -23,11 +26,20 @@ public class DataStore {
             loadDataStore();
         }
     }
-
+    /**
+     * Get the data for the guild
+     * @param guild The guild to get the data for
+     * @return The guild's data
+     */
     public GuildStore getGuildStore(Guild guild) {
         return getGuildStore(guild.getId());
     }
 
+    /**
+     * Get the data for the guild
+     * @param guildId The ID of the guild
+     * @return The guild's data
+     */
     public GuildStore getGuildStore(String guildId) {
         GuildStore store;
         if (guildStores.containsKey(guildId)) {
@@ -40,6 +52,9 @@ public class DataStore {
         return store;
     }
 
+    /**
+     * Save the datastore to disk
+     */
     public void saveDataStore() {
         try (FileWriter fileWriter = new FileWriter(store)) {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -49,6 +64,9 @@ public class DataStore {
         }
     }
 
+    /**
+     * Load the datastore from disk
+     */
     public void loadDataStore() {
         try(FileInputStream stream = new FileInputStream(store);
                 InputStreamReader reader = new InputStreamReader(stream)) {
