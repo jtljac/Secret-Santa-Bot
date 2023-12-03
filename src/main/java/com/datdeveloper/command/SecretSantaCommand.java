@@ -6,6 +6,8 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
+import static com.datdeveloper.Bot.logger;
+
 /**
  * A command to begin the secret santa
  * <br>
@@ -57,6 +59,7 @@ public class SecretSantaCommand extends BaseCommand {
         ).queue();
 
         event.reply("Successfully sent message").setEphemeral(true).queue();
+        logger.info("Started secret santa for {}", event.getGuild().getName());
         return true;
     }
 }

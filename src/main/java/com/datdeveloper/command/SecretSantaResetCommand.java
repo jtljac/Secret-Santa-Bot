@@ -6,6 +6,8 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 
 import java.util.ArrayList;
 
+import static com.datdeveloper.Bot.logger;
+
 /**
  * A command to reset the Secret Santa by clearing all current opt ins for the guild
  */
@@ -21,6 +23,7 @@ public class SecretSantaResetCommand extends BaseCommand {
 
         DataStore.INSTANCE.getGuildStore(guild).partakers = new ArrayList<>();
         DataStore.INSTANCE.saveDataStore();
+        logger.info("Reset guild: {}", guild.getName());
         event.reply("Cleared the current opt-ins").setEphemeral(true).queue();
         return true;
     }

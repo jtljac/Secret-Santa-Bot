@@ -1,10 +1,20 @@
-plugins {
-    id 'java'
-    id "com.github.johnrengelman.shadow" version "7.1.0"
+buildscript {
+    repositories {
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath 'com.github.johnrengelman:shadow:8.1.1'
+    }
 }
 
+apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
 group 'com.datadeveloper'
-version '1.0-SNAPSHOT'
+version '1.0.0'
 
 repositories {
     mavenCentral()
@@ -26,6 +36,12 @@ dependencies {
 }
 
 build.dependsOn shadowJar
+
+tasks.register('printVersion') {
+    doLast {
+        println version
+    }
+}
 
 test {
     useJUnitPlatform()

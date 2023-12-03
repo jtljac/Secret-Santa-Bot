@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.datdeveloper.Bot.logger;
+
 /**
  * A command that kicks off the secret santa gifting by assigning who each person whom has opted in is gifting
  */
@@ -52,7 +54,8 @@ public class StartSecretSantaCommand extends BaseCommand{
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             gson.toJson(gifts, fileWriter);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.warn("Failed to write targets file for {}", guild.getName());
+            logger.warn("Error:", e);
         }
 
         event.reply("Successfully sent PMs").setEphemeral(true).queue();

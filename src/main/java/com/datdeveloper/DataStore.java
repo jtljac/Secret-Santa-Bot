@@ -60,7 +60,7 @@ public class DataStore {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             gson.toJson(guildStores, fileWriter);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Failed to write guildstore", e);
         }
     }
 
